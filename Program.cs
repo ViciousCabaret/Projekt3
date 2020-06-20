@@ -131,7 +131,7 @@ namespace Projekt3
     class ArraySort
     {
         private readonly Stopwatch _stopwatch = new Stopwatch();
-        private long _time;
+        private long _time = 0;
         private bool _error;
         private string _errorMessage;
         
@@ -186,6 +186,8 @@ namespace Projekt3
                 t[k] = t[i]; // zamieniamy i-ty z k-tym
                 t[i] = Buf;
             }
+            
+            _stopwatch.Stop();
             _time = _stopwatch.ElapsedMilliseconds;
             _stopwatch.Reset();
         } /* SelectionSort() */
@@ -204,6 +206,8 @@ namespace Projekt3
                 }
                 t[j] = Buf; // i wpisujemy na docelowe miejsce
             }
+            
+            _stopwatch.Stop();
             _time = _stopwatch.ElapsedMilliseconds;
             _stopwatch.Reset();
         } /* InsertionSort() */
@@ -226,6 +230,8 @@ namespace Projekt3
                 right--; // kopiec jest mniejszy
                 Heapify(t, left, right); // ale trzeba go naprawić
             }
+            
+            _stopwatch.Stop();
             _time = _stopwatch.ElapsedMilliseconds;
             _stopwatch.Reset();
         } /* HeapSort() */
@@ -268,6 +274,7 @@ namespace Projekt3
             }
             while(Left <= Right);
             
+            _stopwatch.Stop();
             _time = _stopwatch.ElapsedMilliseconds;
             _stopwatch.Reset();
             
