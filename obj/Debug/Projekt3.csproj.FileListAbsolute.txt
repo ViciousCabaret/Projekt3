@@ -1,0 +1,5 @@
+C:\Users\Mikołaj\RiderProjects\Projekt3\bin\Debug\Projekt3.exe
+C:\Users\Mikołaj\RiderProjects\Projekt3\bin\Debug\Projekt3.pdb
+C:\Users\Mikołaj\RiderProjects\Projekt3\obj\Debug\Projekt3.csprojAssemblyReference.cache
+C:\Users\Mikołaj\RiderProjects\Projekt3\obj\Debug\Projekt3.exe
+C:\Users\Mikołaj\RiderProjects\Projekt3\obj\Debug\Projekt3.pdb
