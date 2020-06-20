@@ -160,8 +160,6 @@ namespace Projekt3
                     SetErrorMessage("Entered sort method [" + sortMethod + "] doesn't exists");
                     break;
             }
-            _time = _stopwatch.ElapsedMilliseconds;
-            _stopwatch.Reset();
         }
 
         private void SetErrorMessage(string message)
@@ -188,6 +186,8 @@ namespace Projekt3
                 t[k] = t[i]; // zamieniamy i-ty z k-tym
                 t[i] = Buf;
             }
+            _time = _stopwatch.ElapsedMilliseconds;
+            _stopwatch.Reset();
         } /* SelectionSort() */
         
         private void InsertionSort (int[] t)
@@ -204,6 +204,8 @@ namespace Projekt3
                 }
                 t[j] = Buf; // i wpisujemy na docelowe miejsce
             }
+            _time = _stopwatch.ElapsedMilliseconds;
+            _stopwatch.Reset();
         } /* InsertionSort() */
         
         private void HeapSort(int[] t)
@@ -224,6 +226,8 @@ namespace Projekt3
                 right--; // kopiec jest mniejszy
                 Heapify(t, left, right); // ale trzeba go naprawić
             }
+            _time = _stopwatch.ElapsedMilliseconds;
+            _stopwatch.Reset();
         } /* HeapSort() */
         
         private void Heapify(int[] t, uint left, uint right)
@@ -263,6 +267,10 @@ namespace Projekt3
                 Right = k - 1; // zacieśnienie prawej granicy
             }
             while(Left <= Right);
+            
+            _time = _stopwatch.ElapsedMilliseconds;
+            _stopwatch.Reset();
+            
         } /* CocktailSort() */
     }
 
