@@ -287,25 +287,31 @@ namespace Projekt3
         {
             string[] methods = { "InsertionSort", "SelectionSort", "HeapSort", "CocktailSort" };
             int maxValue = 1000000;
-            int quantity = 100000;
-            
-            Arrays arrays = new Arrays(maxValue, quantity);
+            int quantity = 5000;
 
-            foreach (var item in arrays.GetArrayList())
+            do
             {
-                foreach (string sortMethod in methods)
-                {
-                    int[] array = new int[quantity];
-                    Array.Copy(item.Array, array, quantity);
-                    ArraySort sort = new ArraySort(sortMethod, array);
-                    if(sort.Error)
-                        Console.WriteLine(sort.ErrorMessage);
-                    else
-                        Console.WriteLine("Time needed to sort " + item.ArrayName + " array, with method " + sortMethod + " : " + sort.Time);
-                }
+                Console.WriteLine("POSORTOWANE TABLICE DLA " + quantity + " elementów: ");
+                Arrays arrays = new Arrays(maxValue, quantity);
 
-                Console.WriteLine("\n =----------------------------------------=");
-            }
+                foreach (var item in arrays.GetArrayList())
+                {
+                    foreach (string sortMethod in methods)
+                    {
+                        int[] array = new int[quantity];
+                        Array.Copy(item.Array, array, quantity);
+                        ArraySort sort = new ArraySort(sortMethod, array);
+                        if(sort.Error)
+                            Console.WriteLine(sort.ErrorMessage);
+                        else
+                            Console.WriteLine("Time needed to sort " + item.ArrayName + " array, with method " + sortMethod + " : " + sort.Time);
+                    }
+                    Console.WriteLine("\n =----------------------------------------=");
+                }
+                
+                quantity += 10000;
+            } while (quantity < 100000);
+
         }
     }
 }
