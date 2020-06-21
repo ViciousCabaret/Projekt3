@@ -157,6 +157,9 @@ namespace Projekt3
 
         public ArraySort(string sortMethod, int[] t)
         {
+            
+            
+            
             switch (sortMethod)
             {
                 case "InsertionSort":
@@ -392,15 +395,15 @@ namespace Projekt3
                 }
                 
                 quantity += 10000;
-            } while (quantity <= 400000);
+            } while (quantity <= 200000);
             
         }
 
         private static void Task2()
         {
             string[] methods = { "QuickSortIterative", "QuickSortRecursive" };
-            string[] arrs = {" randomized "};
-
+            string[] arrs = {"randomized"};
+            
             int maxValue = 1000000;
             int quantity = 50000;
 
