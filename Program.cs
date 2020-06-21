@@ -6,19 +6,16 @@ using System.Threading;
 
 namespace Projekt3
 {
-
     struct ArrayStruct
     {
         public string ArrayName { get; }
         public int[] Array { get; }
-
         public ArrayStruct(string name, int[] array)
         {
             ArrayName = name;
             Array = array;
         }
     }
-    
     class Arrays 
     {
         private int[] _constant;
@@ -29,12 +26,9 @@ namespace Projekt3
         private int[] _ashaped;
         
         private List<ArrayStruct> _arrays = new List<ArrayStruct>();
-        
         private int _maxValue;
         private int _quantity;
-        
         private Random _rnd = new Random(Guid.NewGuid().GetHashCode());
-
         private void GenerateArrayList(string[] arrays)
         {
             foreach (string arrayName in arrays)
@@ -71,13 +65,11 @@ namespace Projekt3
                 }
             }
         }
-
         public List<ArrayStruct> GetArrayList(string[] arrays)
         {
             GenerateArrayList(arrays);
             return _arrays;
         }
-
         public Arrays(int maxValue, int quantity)
         {
             this._maxValue = maxValue;
@@ -100,13 +92,11 @@ namespace Projekt3
             GenerateVShapedArray();
             GenerateAShapedArray();
         }
-
         private void GenerateVShapedArray()
         {
             int[] workArray = new int[_quantity];
             Array.Copy(_decreasing, workArray, _quantity);
             
-
             int counter = 0;
             for (int i = 0; i < workArray.Length; i++)
             {
@@ -125,7 +115,6 @@ namespace Projekt3
         {
             int[] workArray = new int[_quantity];
             Array.Copy(_increasing, workArray, _quantity);
-            
             int counter = 0;
             for (int i = 0; i < workArray.Length; i++)
             {
@@ -140,7 +129,6 @@ namespace Projekt3
                 }
             }
         }
-        
         private void GenerateConstantArray()
         {
             int constantValue = _rnd.Next(_maxValue);
@@ -149,7 +137,6 @@ namespace Projekt3
                 _constant[i] = constantValue;
             }
         }
-        
         private void GenerateRandomArray()
         {
             for (int i = 0; i < _quantity; i++)
@@ -157,41 +144,29 @@ namespace Projekt3
                 this._randomized[i] = _rnd.Next(_maxValue);
             }
         }
-
         private void GenerateIncreasingArray()
         {
             Array.Copy(_randomized, _increasing, _quantity);
             Array.Sort(this._increasing);
         }
-
         private void GenerateDecreasingArray()
         {
             Array.Copy(_increasing, _decreasing, _quantity);
             Array.Reverse(_decreasing);
         }
     }
-
     class ArraySort
     {
         private readonly Stopwatch _stopwatch = new Stopwatch();
+        private readonly Random _rnd = new Random();
         private long _time = 0;
         private bool _error;
         private string _errorMessage;
-        private int _p;
-
-        public int P
-        {
-            get => _p;
-            set => _p = value;
-        }
-
         public long Time => _time;
         public bool Error => _error; 
         public string ErrorMessage => _errorMessage;
-
-        public ArraySort(string sortMethod, int[] t, int pivot)
+        public ArraySort(string sortMethod, int[] t)
         {
-
             switch (sortMethod)
             {
                 case "InsertionSort":
@@ -216,9 +191,23 @@ namespace Projekt3
                     _stopwatch.Reset();
                     _stopwatch.Stop();
                     break;
-                case "QuickSortRecursivePivotChanged":
+                case "QuickSortRecursiveFromLeft":
                     _stopwatch.Start();
-                    QuickSortRecursivePivotChanged(t, 0, t.Length - 1, pivot);
+                    QuickSortRecursiveFromLeft(t, 0, t.Length - 1);
+                    _time = _stopwatch.ElapsedMilliseconds;
+                    _stopwatch.Reset();
+                    _stopwatch.Stop();
+                    break;
+                case "QuickSortRecursiveFromRight":
+                    _stopwatch.Start();
+                    QuickSortRecursiveFromRight(t, 0, t.Length - 1);
+                    _time = _stopwatch.ElapsedMilliseconds;
+                    _stopwatch.Reset();
+                    _stopwatch.Stop();
+                    break;
+                case "QuickSortRecursiveFromRandom":
+                    _stopwatch.Start();
+                    QuickSortRecursiveFromRandom(t, 0, t.Length - 1);
                     _time = _stopwatch.ElapsedMilliseconds;
                     _stopwatch.Reset();
                     _stopwatch.Stop();
@@ -229,14 +218,11 @@ namespace Projekt3
                     break;
             }
         }
-
         private void SetErrorMessage(string message)
         {
             _errorMessage = message;
         }
-        
         // SORT METHODS: 
-        
         // QUICK SORT RECURSIVE
         private void QuickSortRecursive(int[] t, int l, int p)
         {
@@ -257,15 +243,14 @@ namespace Projekt3
             while (i <= j);
             if (l < j) QuickSortRecursive(t, l, j); // sortujemy lewą część (jeśli jest)
             if (i < p) QuickSortRecursive(t, i, p); // sortujemy prawą część (jeśli jest)
-        } /* qsort() */        
-        
-        // QUICK SORT RECURSIVE
-        private void QuickSortRecursivePivotChanged(int[] t, int l, int p, int pivot)
+        } /* qsort() */
+        // QUICK SORT RECURSIVE FROM LEFT
+        private void QuickSortRecursiveFromLeft(int[] t, int l, int p)
         {
             int i, j, x;
             i = l;
             j = p;
-            x = t[pivot]; // (pseudo)mediana
+            x = t[l]; // (pseudo)mediana
             do
             {
                 while (t[i] < x) i++; // przesuwamy indeksy z lewej
@@ -277,8 +262,54 @@ namespace Projekt3
                 }
             }
             while (i <= j);
-            if (l < j) QuickSortRecursive(t, l, j); // sortujemy lewą część (jeśli jest)
-            if (i < p) QuickSortRecursive(t, i, p); // sortujemy prawą część (jeśli jest)
+            if (l < j) QuickSortRecursiveFromLeft(t, l, j); // sortujemy lewą część (jeśli jest)
+            if (i < p) QuickSortRecursiveFromLeft(t, i, p); // sortujemy prawą część (jeśli jest)
+        } /* qsort() */        
+        
+        // QUICK SORT RECURSIVE FROM RIGHT
+        private void QuickSortRecursiveFromRight(int[] t, int l, int p)
+        {
+            int i, j, x;
+            i = l;
+            j = p;
+            x = t[p]; // (pseudo)mediana
+            do
+            {
+                while (t[i] < x) i++; // przesuwamy indeksy z lewej
+                while (x < t[j]) j--; // przesuwamy indeksy z prawej
+                if (i <= j) // jeśli nie minęliśmy się indeksami (koniec kroku)
+                { // zamieniamy elementy
+                    int buf = t[i]; t[i] = t[j]; t[j] = buf;
+                    i++; j--;
+                }
+            }
+            while (i <= j);
+            if (l < j) QuickSortRecursiveFromRight(t, l, j); // sortujemy lewą część (jeśli jest)
+            if (i < p) QuickSortRecursiveFromRight(t, i, p); // sortujemy prawą część (jeśli jest)
+        } /* qsort() */
+        
+        
+        // QUICK SORT RECURSIVE FROM RANDOM
+        private void QuickSortRecursiveFromRandom(int[] t, int l, int p)
+        {
+            
+            int i, j, x;
+            i = l;
+            j = p;
+            x = t[_rnd.Next(l, p)]; // (pseudo)mediana
+            do
+            {
+                while (t[i] < x) i++; // przesuwamy indeksy z lewej
+                while (x < t[j]) j--; // przesuwamy indeksy z prawej
+                if (i <= j) // jeśli nie minęliśmy się indeksami (koniec kroku)
+                { // zamieniamy elementy
+                    int buf = t[i]; t[i] = t[j]; t[j] = buf;
+                    i++; j--;
+                }
+            }
+            while (i <= j);
+            if (l < j) QuickSortRecursiveFromRight(t, l, j); // sortujemy lewą część (jeśli jest)
+            if (i < p) QuickSortRecursiveFromRight(t, i, p); // sortujemy prawą część (jeśli jest)
         } /* qsort() */
         
         // QUICK SORT ITERATIVE
@@ -311,13 +342,10 @@ namespace Projekt3
                     p=j;
                 } while(l<p);
             } while(sp>=0); // dopóki stos żądań nie będzie pusty
-            
             _stopwatch.Stop();
             _time = _stopwatch.ElapsedMilliseconds;
             _stopwatch.Reset();
-            
         } /* qsort() */
-        
         private void SelectionSort(int[] t)
         {
             _stopwatch.Start();
@@ -335,12 +363,10 @@ namespace Projekt3
                 t[k] = t[i]; // zamieniamy i-ty z k-tym
                 t[i] = Buf;
             }
-            
             _stopwatch.Stop();
             _time = _stopwatch.ElapsedMilliseconds;
             _stopwatch.Reset();
         } /* SelectionSort() */
-        
         private void InsertionSort (int[] t)
         {
             _stopwatch.Start();
@@ -355,12 +381,10 @@ namespace Projekt3
                 }
                 t[j] = Buf; // i wpisujemy na docelowe miejsce
             }
-            
             _stopwatch.Stop();
             _time = _stopwatch.ElapsedMilliseconds;
             _stopwatch.Reset();
         } /* InsertionSort() */
-        
         private void HeapSort(int[] t)
         {
             _stopwatch.Start();
@@ -379,12 +403,10 @@ namespace Projekt3
                 right--; // kopiec jest mniejszy
                 Heapify(t, left, right); // ale trzeba go naprawić
             }
-            
             _stopwatch.Stop();
             _time = _stopwatch.ElapsedMilliseconds;
             _stopwatch.Reset();
         } /* HeapSort() */
-        
         private void Heapify(int[] t, uint left, uint right)
         { // procedura budowania/naprawiania kopca
             uint i = left,
@@ -401,7 +423,6 @@ namespace Projekt3
             }
             t[i] = buf;
         } /* Heapify() */
-        
         private void CocktailSort(int[] t)
         {
             _stopwatch.Start();
@@ -422,27 +443,17 @@ namespace Projekt3
                 Right = k - 1; // zacieśnienie prawej granicy
             }
             while(Left <= Right);
-            
             _stopwatch.Stop();
             _time = _stopwatch.ElapsedMilliseconds;
             _stopwatch.Reset();
-            
         } /* CocktailSort() */
     }
 
     internal class Program
     {
-
         private bool _p;
         private static Random _random = new Random();
         
-        public bool P
-        {
-            get => _p;
-            set => _p = value;
-        }
-        
-
         private static void GetResults(string[] methods, string[] arrs, int maxValue, int quantity)
         {
             do
@@ -456,49 +467,26 @@ namespace Projekt3
                     {
                         int[] array = new int[quantity];
                         Array.Copy(item.Array, array, quantity);
-
-                        // NIE DOCZYTAŁEM POLECENIA I POPRAWIAŁEM NA OSTATNIĄ CHWILĘ NA SZYBKO
-                        if (sortMethod == "QuickSortRecursivePivotChanged")
-                        {
-                            int random = _random.Next(quantity);
-                            int[] pivots = {0, quantity-1, random};
-                            foreach (int pivot in pivots)
-                            {
-                                ArraySort sort = new ArraySort(sortMethod, array, pivot);
-                            
-                                if(sort.Error)
-                                    Console.WriteLine(sort.ErrorMessage);
-                                else
-                                    Console.WriteLine("Time needed to sort " + item.ArrayName + " array, with method " + sortMethod + " : " + sort.Time + ", with pivot: " + pivot);
-                            }
-                        }
-                        else
-                        {
-                            ArraySort sort = new ArraySort(sortMethod, array, 0);
+                            ArraySort sort = new ArraySort(sortMethod, array);
                             if(sort.Error)
                                 Console.WriteLine(sort.ErrorMessage);
                             else
                                 Console.WriteLine("Time needed to sort " + item.ArrayName + " array, with method " + sortMethod + " : " + sort.Time);
-                        }
                     }
                     Console.WriteLine("\n =----------------------------------------=");
                 }
-                
                 quantity += 10000;
             } while (quantity <= 200000);
-            
         }
-
         private static void Task3()
         {
-            string[] methods = { "QuickSortRecursivePivotChanged" };
+            string[] methods = { "QuickSortRecursive", "QuickSortRecursiveFromRight", "QuickSortRecursiveFromRandom" };
             string[] arrs = {"ashaped"};
             
             int maxValue = 1000000;
             int quantity = 50000;
             GetResults(methods, arrs, maxValue, quantity);
         }
-        
         private static void Task2()
         {
             string[] methods = { "QuickSortIterative", "QuickSortRecursive" };
@@ -509,7 +497,6 @@ namespace Projekt3
 
             GetResults(methods, arrs, maxValue, quantity);
         }
-        
         private static void Task1()
         {
             string[] methods = { "InsertionSort", "SelectionSort", "HeapSort", "CocktailSort" };
@@ -520,13 +507,11 @@ namespace Projekt3
 
             GetResults(methods, arrs, maxValue, quantity);
         }
-        
         public static void Main(string[] args)
         {
             string choice;
             ShowMenu();
             bool exitController = false;
-
             do
             {
                 choice = Console.ReadLine();
@@ -543,7 +528,7 @@ namespace Projekt3
                         Task2();
                         break;
                     case "3":
-                        Thread TesterThread = new Thread(Program.Task3, 8 * 1024 * 1024); // utworzenie wątku
+                        Thread TesterThread = new Thread(Program.Task3, 8 * 8192 * 8192); // utworzenie wątku
                         TesterThread.Start(); // uruchomienie wątku
                         TesterThread.Join(); // oczekiwanie na zakończenie wątku
                         break;
@@ -553,7 +538,6 @@ namespace Projekt3
                 }
             } while (exitController == false);
         }
-
         public static void ShowMenu()
         {
             Console.WriteLine("Wyjdz z programu - wybierz 0");
