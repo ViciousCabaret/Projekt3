@@ -9,7 +9,6 @@ namespace Projekt3
     struct ArrayStruct
     {
         public string ArrayName { get; }
-
         public int[] Array { get; }
 
         public ArrayStruct(string name, int[] array)
@@ -17,7 +16,6 @@ namespace Projekt3
             ArrayName = name;
             Array = array;
         }
-        
     }
     
     class Arrays 
@@ -35,24 +33,42 @@ namespace Projekt3
         
         private Random _rnd = new Random(Guid.NewGuid().GetHashCode());
 
-        private void GenerateArrayList()
+        private void GenerateArrayList(string[] arrays)
         {
-            ArrayStruct constant = new ArrayStruct("constant", _constant);
-            ArrayStruct randomized = new ArrayStruct("randomized", _randomized);
-            ArrayStruct increasing = new ArrayStruct("increasing", _increasing);
-            ArrayStruct decreasing = new ArrayStruct("decreasing", _decreasing);
-            ArrayStruct vshaped = new ArrayStruct("vshaped", _vshaped);
-            
-            _arrays.Add(constant);
-            _arrays.Add(randomized);
-            _arrays.Add(increasing);
-            _arrays.Add(decreasing);
-            _arrays.Add(vshaped);
+            foreach (string arrayName in arrays)
+            {
+                switch (arrayName)
+                {
+                    case "constant": 
+                        ArrayStruct constant = new ArrayStruct("constant", _constant);
+                        _arrays.Add(constant);
+                        break;
+                    case "randomized":
+                        ArrayStruct randomized = new ArrayStruct("randomized", _randomized);
+                        _arrays.Add(randomized);
+                        break;
+                    case "increasing":
+                        ArrayStruct increasing = new ArrayStruct("increasing", _increasing);
+                        _arrays.Add(increasing);
+                        break;
+                    case "decreasing":
+                        ArrayStruct decreasing = new ArrayStruct("decreasing", _decreasing);
+                        _arrays.Add(decreasing);
+                        break;
+                    case "vshaped":
+                        ArrayStruct vshaped = new ArrayStruct("vshaped", _vshaped);
+                        _arrays.Add(vshaped);
+                        break;
+                    default:
+                        Console.WriteLine("THERE IS NO SUCH ARRAY!");
+                        break;
+                }
+            }
         }
 
-        public List<ArrayStruct> GetArrayList()
+        public List<ArrayStruct> GetArrayList(string[] arrays)
         {
-            GenerateArrayList();
+            GenerateArrayList(arrays);
             return _arrays;
         }
 
@@ -155,6 +171,16 @@ namespace Projekt3
                 case "CocktailSort":
                     CocktailSort(t);
                     break;
+                case "QuickSortIterative":
+                    QuickSortIterative(t);
+                    break;
+                case "QuickSortRecursive":
+                    _stopwatch.Start();
+                    QuickSortRecursive(t, 0, t.Length-1);
+                    _time = _stopwatch.ElapsedMilliseconds;
+                    _stopwatch.Reset();
+                    _stopwatch.Stop();
+                    break;
                 default:
                     _error = true;
                     SetErrorMessage("Entered sort method [" + sortMethod + "] doesn't exists");
@@ -168,6 +194,64 @@ namespace Projekt3
         }
         
         // SORT METHODS: 
+        
+        // QUICK SORT RECURSIVE
+        private void QuickSortRecursive(int[] t, int l, int p)
+        {
+            int i, j, x;
+            i = l;
+            j = p;
+            x = t[(l+p)/2]; // (pseudo)mediana
+            do
+            {
+                while (t[i] < x) i++; // przesuwamy indeksy z lewej
+                while (x < t[j]) j--; // przesuwamy indeksy z prawej
+                if (i <= j) // jeśli nie minęliśmy się indeksami (koniec kroku)
+                { // zamieniamy elementy
+                    int buf = t[i]; t[i] = t[j]; t[j] = buf;
+                    i++; j--;
+                }
+            }
+            while (i <= j);
+            if (l < j) QuickSortRecursive(t, l, j); // sortujemy lewą część (jeśli jest)
+            if (i < p) QuickSortRecursive(t, i, p); // sortujemy prawą część (jeśli jest)
+        } /* qsort() */
+        
+        // QUICK SORT ITERATIVE
+        private void QuickSortIterative(int[] t)
+        { 
+            _stopwatch.Start();
+
+            int i, j, l, p, sp;
+            int[] stos_l = new int[t.Length],
+                stos_p = new int[t.Length]; // przechowywanie żądań podziału
+            sp=0; stos_l[sp] = 0; stos_p[sp] = t.Length - 1; // rozpoczynamy od całej tablicy
+            do
+            {
+                l=stos_l[sp]; p=stos_p[sp]; sp--; // pobieramy żądanie podziału
+                do
+                { int x;
+                    i=l; j=p; x=t[(l+p)/2]; // analogicznie do wersji rekurencyjnej
+                    do
+                    {
+                        while (t[i] < x) i++;
+                        while (x < t[j]) j--;
+                        if (i <= j)
+                        {
+                            int buf = t[i]; t[i] = t[j]; t[j] = buf;
+                            i++; j--;
+                        }
+                    } while (i <= j);
+                    if(i<p) { sp++; stos_l[sp]=i; stos_p[sp]=p; } // ewentualnie dodajemy żądanie podziału
+                    p=j;
+                } while(l<p);
+            } while(sp>=0); // dopóki stos żądań nie będzie pusty
+            
+            _stopwatch.Stop();
+            _time = _stopwatch.ElapsedMilliseconds;
+            _stopwatch.Reset();
+            
+        } /* qsort() */
         
         private void SelectionSort(int[] t)
         {
@@ -283,18 +367,16 @@ namespace Projekt3
 
     internal class Program
     {
-        public static void Main(string[] args)
+
+        private static void GetResults(string[] methods, string[] arrs, int maxValue, int quantity)
         {
-            string[] methods = { "InsertionSort", "SelectionSort", "HeapSort", "CocktailSort" };
-            int maxValue = 1000000;
-            int quantity = 5000;
 
             do
             {
                 Console.WriteLine("POSORTOWANE TABLICE DLA " + quantity + " elementów: ");
                 Arrays arrays = new Arrays(maxValue, quantity);
 
-                foreach (var item in arrays.GetArrayList())
+                foreach (var item in arrays.GetArrayList(arrs))
                 {
                     foreach (string sortMethod in methods)
                     {
@@ -310,8 +392,67 @@ namespace Projekt3
                 }
                 
                 quantity += 10000;
-            } while (quantity < 100000);
+            } while (quantity <= 400000);
+            
+        }
 
+        private static void Task2()
+        {
+            string[] methods = { "QuickSortIterative", "QuickSortRecursive" };
+            string[] arrs = {" randomized "};
+
+            int maxValue = 1000000;
+            int quantity = 50000;
+
+            GetResults(methods, arrs, maxValue, quantity);
+        }
+        
+        private static void Task1()
+        {
+            string[] methods = { "InsertionSort", "SelectionSort", "HeapSort", "CocktailSort" };
+            string[] arrs = {"constant", "randomized", "increasing", "decreasing", "vshaped"};
+            
+            int maxValue = 1000000;
+            int quantity = 50000;
+
+            GetResults(methods, arrs, maxValue, quantity);
+        }
+        
+        public static void Main(string[] args)
+        {
+            string choice;
+            ShowMenu();
+            bool exitController = false;
+
+            do
+            {
+                choice = Console.ReadLine();
+                switch (choice)
+                {
+                    case "0":
+                        Console.WriteLine("");
+                        exitController = true;
+                        break;
+                    case "1":
+                        Task1();
+                        break;
+                    case "3":
+                        Task2();
+                        break;
+                    default:
+                        Console.WriteLine("Nie ma takiej opcji wyboru, sprobuj ponownie");
+                        
+                        break;
+                }
+            } while (exitController == false);
+
+        }
+
+        public static void ShowMenu()
+        {
+            Console.WriteLine("Wyjdz z programu - wybierz 0");
+            Console.WriteLine("Zadanie 1 - wybierz 1");
+            Console.WriteLine("Zadanie 3 - wybierz 3");
         }
     }
 }
