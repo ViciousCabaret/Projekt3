@@ -450,8 +450,6 @@ namespace Projekt3
 
     internal class Program
     {
-        private bool _p;
-        private static Random _random = new Random();
         
         private static void GetResults(string[] methods, string[] arrs, int maxValue, int quantity)
         {
